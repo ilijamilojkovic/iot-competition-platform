@@ -1,6 +1,9 @@
 const express = require('express');
 const cors = require('cors');
 const app = express();
+const authRoutes = require('./routes/auth');
+const projectRoutes = require('./routes/projects');
+
 require('dotenv').config();
 
 app.use(cors());
@@ -15,6 +18,8 @@ app.listen(PORT, () => {
   console.log(`Server radi na portu ${PORT}`);
 });
 
-const authRoutes = require('./routes/auth');
+
 
 app.use('/api/auth', authRoutes);
+app.use('/uploads', express.static('uploads'));
+app.use('/api/projects', projectRoutes);
