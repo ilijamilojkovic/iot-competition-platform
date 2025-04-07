@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const db = require('../db');
 const multer = require('multer');
+const verifyToken = require('../middleware/authMiddleware');
 
 // Konfiguracija za upload
 const storage = multer.diskStorage({
@@ -17,21 +18,23 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Dodavanje projekta
-router.post('/', upload.single('file'), async (req, res) => {
-  const { title, description, github_link, user_id } = req.body;
-  const file_path = req.file ? `/uploads/${req.file.filename}` : null;
-
-  try {
-    const [result] = await db.execute(
-      'INSERT INTO projects (user_id, title, description, github_link, file_path) VALUES (?, ?, ?, ?, ?)',
-      [user_id, title, description, github_link, file_path]
-    );
-    res.status(201).json({ message: 'Projekat uspešno dodat!', projectId: result.insertId });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Greška pri dodavanju projekta.' });
-  }
-});
+router.post('/', verifyToken, upload.single('file'), async (req, res) => {
+    const { title, description, github_link } = req.body;
+    const user_id = req.user.id;
+    const file_path = req.file ? `/uploads/${req.file.filename}` : null;
+  
+    try {
+      const [result] = await db.execute(
+        'INSERT INTO projects (user_id, title, description, github_link, file_path) VALUES (?, ?, ?, ?, ?)',
+        [user_id, title, description, github_link, file_path]
+      );
+      res.status(201).json({ message: 'Projekat uspešno dodat!', projectId: result.insertId });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: 'Greška pri dodavanju projekta.' });
+    }
+  });
+  
 
 // Dobavljanje svih projekata
 router.get('/', async (req, res) => {

@@ -1,4 +1,3 @@
-// client/src/pages/AddProject.js
 import React, { useState } from 'react';
 
 function AddProject() {
@@ -6,7 +5,6 @@ function AddProject() {
     title: '',
     description: '',
     github_link: '',
-    user_id: 1, // Za sada fiksno
   });
   const [file, setFile] = useState(null);
   const [message, setMessage] = useState('');
@@ -21,6 +19,7 @@ function AddProject() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     const data = new FormData();
     for (let key in formData) {
       data.append(key, formData[key]);
@@ -29,12 +28,19 @@ function AddProject() {
       data.append('file', file);
     }
 
+    const token = localStorage.getItem('token');
+
     try {
       const res = await fetch('http://localhost:5000/api/projects', {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${token}`, // šaljemo token
+        },
         body: data,
       });
+
       const result = await res.json();
+
       if (res.ok) {
         setMessage('✅ Projekat uspešno dodat!');
       } else {
@@ -50,9 +56,25 @@ function AddProject() {
     <div>
       <h2>Prijavi IoT Projekat</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data">
-        <input type="text" name="title" placeholder="Naziv projekta" onChange={handleChange} required /><br />
-        <textarea name="description" placeholder="Opis projekta" onChange={handleChange} required /><br />
-        <input type="text" name="github_link" placeholder="GitHub link" onChange={handleChange} /><br />
+        <input
+          type="text"
+          name="title"
+          placeholder="Naziv projekta"
+          onChange={handleChange}
+          required
+        /><br />
+        <textarea
+          name="description"
+          placeholder="Opis projekta"
+          onChange={handleChange}
+          required
+        /><br />
+        <input
+          type="text"
+          name="github_link"
+          placeholder="GitHub link"
+          onChange={handleChange}
+        /><br />
         <input type="file" onChange={handleFileChange} /><br />
         <button type="submit">Pošalji</button>
       </form>
