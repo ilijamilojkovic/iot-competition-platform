@@ -1,15 +1,16 @@
 // client/src/components/Navbar.js
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 
 function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setIsLoggedIn(!!token);
-  }, []);
+  }, [location]); // reaguj na promenu rute (osvežava navbar)
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -20,14 +21,20 @@ function Navbar() {
   return (
     <nav>
       <Link to="/">Početna</Link> |{' '}
-      <Link to="/register">Registracija</Link> |{' '}
-      <Link to="/login">Login</Link> |{' '}
-      <Link to="/add-project">Prijava Projekta</Link> |{' '}
       <Link to="/projects">Svi Projekti</Link> |{' '}
+      {!isLoggedIn && (
+        <>
+          <Link to="/register">Registracija</Link> |{' '}
+          <Link to="/login">Login</Link> |{' '}
+        </>
+      )}
       {isLoggedIn && (
-        <button onClick={handleLogout} style={{ marginLeft: '10px' }}>
-          Logout
-        </button>
+        <>
+          <Link to="/add-project">Prijava Projekta</Link> |{' '}
+          <button onClick={handleLogout} style={{ marginLeft: '10px' }}>
+            Logout
+          </button>
+        </>
       )}
     </nav>
   );

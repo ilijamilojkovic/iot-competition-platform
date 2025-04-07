@@ -1,5 +1,6 @@
 // client/src/pages/Login.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
   const [formData, setFormData] = useState({
@@ -7,6 +8,7 @@ function Login() {
     password: '',
   });
   const [message, setMessage] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({...formData, [e.target.name]: e.target.value});
@@ -22,9 +24,9 @@ function Login() {
       });
       const data = await res.json();
       if (res.ok) {
-        // Sačuvaj token u localStorage (ili u context/state)
         localStorage.setItem('token', data.token);
-        setMessage('Login uspešan!');
+        setMessage('Uspešno ulogovan!');
+        setTimeout(() => navigate('/'), 100); // preusmeri na početnu
       } else {
         setMessage(data.message);
       }

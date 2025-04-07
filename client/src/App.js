@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import AddProject from './pages/AddProject';
 import Projects from './pages/Projects';
 import Navbar from './components/Navbar';
+import PrivateRoute from './components/PrivateRoute';
 
 function App() {
   return (
@@ -14,7 +15,14 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<h1>Dobrodošli na IoT Takmičenje Platformu</h1>} />
-        <Route path="/add-project" element={<AddProject />} />
+        <Route
+          path="/add-project"
+          element={
+            <PrivateRoute>
+              <AddProject />
+            </PrivateRoute>
+          }
+        />
         <Route path="/projects" element={<Projects />} />
       </Routes>
     </Router>
